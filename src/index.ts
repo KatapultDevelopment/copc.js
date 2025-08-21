@@ -1,4 +1,4 @@
-console.log('copc.js package loaded successfully');
+console.log('Katapult copc.js package loaded successfully');
 
 export * as Ept from './ept'
 export * from './copc'
