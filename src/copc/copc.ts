@@ -23,7 +23,7 @@ export const Copc = {
 /**
  * Parse the COPC header and walk VLR and EVLR metadata.
  */
-async function create(filename: string | Getter): Promise<Copc> {
+async function create(filename: string | File | Getter): Promise<Copc> {
   const getRemote = Getter.create(filename)
 
   // This is an optimization for the walking of VLRs - we'll grab a fixed size
@@ -64,7 +64,7 @@ async function create(filename: string | Getter): Promise<Copc> {
 }
 
 async function loadHierarchyPage(
-  filename: string | Getter,
+  filename: string | File | Getter,
   page: Hierarchy.Page,
 ) {
   const get = Getter.create(filename)
@@ -72,7 +72,7 @@ async function loadHierarchyPage(
 }
 
 async function loadCompressedPointDataBuffer(
-  filename: string | Getter,
+  filename: string | File | Getter,
   { pointDataOffset, pointDataLength }: Hierarchy.Node,
 ) {
   const get = Getter.create(filename)
@@ -80,7 +80,7 @@ async function loadCompressedPointDataBuffer(
 }
 
 async function loadPointDataBuffer(
-  filename: string | Getter,
+  filename: string | File | Getter,
   { pointDataRecordFormat, pointDataRecordLength }: Las.Header,
   node: Hierarchy.Node,
   lazPerf?: LazPerf,
@@ -97,7 +97,7 @@ async function loadPointDataBuffer(
 
 type Options = { lazPerf?: LazPerf; include?: string[] }
 async function loadPointDataView(
-  filename: string | Getter,
+  filename: string | File | Getter,
   copc: Copc,
   node: Hierarchy.Node,
   { lazPerf, include }: Options = {},
