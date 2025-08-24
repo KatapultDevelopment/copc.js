@@ -3,6 +3,16 @@ import fetch from 'cross-fetch'
 export type Getter = (begin: number, end: number) => Promise<Uint8Array>
 export const Getter = { create, http: getHttpGetter, file: getFsGetter, fileObject: getFileGetter }
 
+// DEBUG: debounced console.log for checking if getters are being called
+let debounceTimer: number | null = null
+function debouncedLog(message: string, delay = 500) {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = window.setTimeout(() => {
+    console.log(message)
+  }, delay) as number
+}
+
+
 function create(arg: string | File | Getter): Getter {
   if (typeof arg === 'function') return arg
   
@@ -17,6 +27,7 @@ function create(arg: string | File | Getter): Getter {
 
 function getHttpGetter(filename: string): Getter {
   return async function getter(begin, end) {
+    debouncedLog(`HTTP getter called for ${filename} (${begin}-${end})`) // DEBUG
     if (begin < 0 || end < 0 || begin > end) throw new Error('Invalid range')
     const response = await fetch(filename, {
       headers: { Range: `bytes=${begin}-${end - 1}` },
@@ -29,6 +40,7 @@ function getHttpGetter(filename: string): Getter {
 
 function getFileGetter(file: File): Getter {
   return async function getter(begin, end) {
+    debouncedLog(`File getter called for ${file.name} (${begin}-${end})`) // DEBUG
     if (begin < 0 || end < 0 || begin > end) throw new Error('Invalid range')
     
     const blob = file.slice(begin, end)
